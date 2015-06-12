@@ -2,6 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:../OddsEvens/OEViewController.h">
+   </FileRef>
+   <FileRef
+      location = "group:../OddsEvens/OEViewController.m">
+   </FileRef>
+   <FileRef
       location = "self:OddsEvens.xcodeproj">
    </FileRef>
 </Workspace>

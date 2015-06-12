@@ -9,11 +9,13 @@
 /* Begin PBXBuildFile section */
 		8E58496C1B2B172000F73D79 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E58496B1B2B172000F73D79 /* main.m */; };
 		8E58496F1B2B172000F73D79 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E58496E1B2B172000F73D79 /* AppDelegate.m */; };
-		8E5849721B2B172000F73D79 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5849711B2B172000F73D79 /* ViewController.m */; };
 		8E5849751B2B172000F73D79 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E5849731B2B172000F73D79 /* Main.storyboard */; };
 		8E5849771B2B172000F73D79 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E5849761B2B172000F73D79 /* Images.xcassets */; };
 		8E58497A1B2B172000F73D79 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8E5849781B2B172000F73D79 /* LaunchScreen.xib */; };
 		8E5849861B2B172000F73D79 /* OddsEvensTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5849851B2B172000F73D79 /* OddsEvensTests.m */; };
+		8E5849941B2B25B900F73D79 /* OEViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5849931B2B25B800F73D79 /* OEViewController.m */; };
+		8E5849971B2B294700F73D79 /* StatMan.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5849961B2B294700F73D79 /* StatMan.m */; };
+		8EF047201B2B6765006DA057 /* BoxView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EF0471F1B2B6765006DA057 /* BoxView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,14 +34,18 @@
 		8E58496B1B2B172000F73D79 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8E58496D1B2B172000F73D79 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		8E58496E1B2B172000F73D79 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		8E5849701B2B172000F73D79 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		8E5849711B2B172000F73D79 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		8E5849741B2B172000F73D79 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8E5849761B2B172000F73D79 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		8E5849791B2B172000F73D79 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		8E58497F1B2B172000F73D79 /* OddsEvensTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OddsEvensTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E5849841B2B172000F73D79 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8E5849851B2B172000F73D79 /* OddsEvensTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OddsEvensTests.m; sourceTree = "<group>"; };
+		8E5849921B2B25B800F73D79 /* OEViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OEViewController.h; sourceTree = "<group>"; };
+		8E5849931B2B25B800F73D79 /* OEViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OEViewController.m; sourceTree = "<group>"; };
+		8E5849951B2B294700F73D79 /* StatMan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatMan.h; sourceTree = "<group>"; };
+		8E5849961B2B294700F73D79 /* StatMan.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatMan.m; sourceTree = "<group>"; };
+		8EF0471E1B2B6765006DA057 /* BoxView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoxView.h; sourceTree = "<group>"; };
+		8EF0471F1B2B6765006DA057 /* BoxView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoxView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,8 +89,12 @@
 			children = (
 				8E58496D1B2B172000F73D79 /* AppDelegate.h */,
 				8E58496E1B2B172000F73D79 /* AppDelegate.m */,
-				8E5849701B2B172000F73D79 /* ViewController.h */,
-				8E5849711B2B172000F73D79 /* ViewController.m */,
+				8E5849921B2B25B800F73D79 /* OEViewController.h */,
+				8E5849931B2B25B800F73D79 /* OEViewController.m */,
+				8EF0471E1B2B6765006DA057 /* BoxView.h */,
+				8EF0471F1B2B6765006DA057 /* BoxView.m */,
+				8E5849951B2B294700F73D79 /* StatMan.h */,
+				8E5849961B2B294700F73D79 /* StatMan.m */,
 				8E5849731B2B172000F73D79 /* Main.storyboard */,
 				8E5849761B2B172000F73D79 /* Images.xcassets */,
 				8E5849781B2B172000F73D79 /* LaunchScreen.xib */,
@@ -168,6 +178,7 @@
 				TargetAttributes = {
 					8E5849651B2B171F00F73D79 = {
 						CreatedOnToolsVersion = 6.3.2;
+						DevelopmentTeam = 8NN8F87V9Z;
 					};
 					8E58497E1B2B172000F73D79 = {
 						CreatedOnToolsVersion = 6.3.2;
@@ -219,9 +230,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8E5849721B2B172000F73D79 /* ViewController.m in Sources */,
+				8E5849971B2B294700F73D79 /* StatMan.m in Sources */,
 				8E58496F1B2B172000F73D79 /* AppDelegate.m in Sources */,
 				8E58496C1B2B172000F73D79 /* main.m in Sources */,
+				8EF047201B2B6765006DA057 /* BoxView.m in Sources */,
+				8E5849941B2B25B900F73D79 /* OEViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -349,9 +362,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = OddsEvens/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -359,9 +375,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = OddsEvens/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -418,6 +437,7 @@
 				8E58498B1B2B172000F73D79 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8E58498C1B2B172000F73D79 /* Build configuration list for PBXNativeTarget "OddsEvensTests" */ = {
 			isa = XCConfigurationList;
@@ -426,6 +446,7 @@
 				8E58498E1B2B172000F73D79 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
