@@ -10,6 +10,7 @@
 
 @interface StatMan : NSObject
 
+@property NSMutableArray *history;
 
 - (void)resetStats;
 - (void)addWin;

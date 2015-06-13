@@ -38,13 +38,13 @@
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="User Choice" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="plB-aD-fCh">
                                 <rect key="frame" x="164" y="219" width="80" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="40"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Game Choice" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ec1-PY-Mwf">
                                 <rect key="frame" x="164" y="298" width="80" height="42"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="40"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Streak Line" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3sZ-Gw-nWq">
@@ -83,6 +83,22 @@
                                 <rect key="frame" x="72" y="246" width="63" height="60"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="10" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="RTq-Mh-E7n">
+                                <rect key="frame" x="286" y="90" width="10" height="400"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ListPrototypeCell" id="Apc-Lp-mqC">
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Apc-Lp-mqC" id="1Ec-Vi-bpY">
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <sections/>
+                                <connections>
+                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="Ej0-sH-KjP"/>
+                                </connections>
+                            </tableView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -91,15 +107,18 @@
                             <constraint firstItem="4hn-db-cAz" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="70" id="G43-On-wcw"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="mrL-Zz-u7a" secondAttribute="bottom" constant="20" id="Ift-UY-hCL"/>
                             <constraint firstItem="3uc-md-egi" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="NWe-An-efR"/>
+                            <constraint firstItem="RTq-Mh-E7n" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="topMargin" constant="90" id="OPM-oV-bJC"/>
                             <constraint firstAttribute="bottomMargin" secondItem="3sZ-Gw-nWq" secondAttribute="bottom" constant="49" id="Qsx-M3-0oe"/>
                             <constraint firstItem="4hn-db-cAz" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="128" id="WN3-7V-kj2"/>
                             <constraint firstItem="3sq-5U-OeU" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="207" id="bec-rZ-Say"/>
                             <constraint firstItem="3sq-5U-OeU" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="70" id="ca5-CA-UxJ"/>
                             <constraint firstItem="mrL-Zz-u7a" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="kc4-FW-XbI"/>
+                            <constraint firstItem="RTq-Mh-E7n" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="270" id="tOn-nn-QcO"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="gamePick" destination="ec1-PY-Mwf" id="RVV-jU-4IK"/>
+                        <outlet property="historyView" destination="RTq-Mh-E7n" id="o91-ZQ-j6c"/>
                         <outlet property="statLine" destination="mrL-Zz-u7a" id="UFc-Bt-5sE"/>
                         <outlet property="statusBox" destination="gaK-wA-c5x" id="6hE-de-xmJ"/>
                         <outlet property="streakLine" destination="3sZ-Gw-nWq" id="Lxu-KK-eoV"/>

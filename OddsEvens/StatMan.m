@@ -13,7 +13,7 @@
 @property int wins;
 @property int losses;
 @property int streak;
-@property  BOOL winning;
+@property BOOL winning;
 
 @end
 
@@ -32,11 +32,12 @@
     _losses=0;
     _streak=0;
     _winning=FALSE;
-    
+    _history=[NSMutableArray array];
 }
 
 - (void)addWin {
     _wins+=1;
+    [_history addObject:@"W"];
     if (_winning) {
         _streak+=1;
     } else {
@@ -46,6 +47,7 @@
 }
 - (void)addLoss {
     _losses+=1;
+    [_history addObject:@"L"];
     if (!_winning) {
         _streak+=1;
     } else {

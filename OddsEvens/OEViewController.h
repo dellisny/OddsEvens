@@ -22,5 +22,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *statLine;
 @property (weak, nonatomic) IBOutlet UIButton *toggleButton;
 @property (weak, nonatomic) IBOutlet BoxView *statusBox;
+@property (weak, nonatomic) IBOutlet UITableView *historyView;
 
 @end

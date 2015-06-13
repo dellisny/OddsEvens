@@ -46,6 +46,7 @@
     [_statusBox setNeedsDisplay];
     _statLine.text=[_stats statString];
     _streakLine.text=[_stats streakString];
+    [_historyView reloadData];
 }
 
 - (int) pick {
@@ -70,8 +71,8 @@
         }
     } else {
         if (pick==val) {
-            [_stats addWin];
             _statusBox.boxState=OEBoxWin;
+            [_stats addWin];
         } else {
             _statusBox.boxState=OEBoxLose;
             [_stats addLoss];
@@ -103,14 +104,35 @@
     [self redraw];
 }
 
-/*
-#pragma mark - Navigation
+#pragma mark - Table view data source
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    // Return the number of sections.
+    return 1;
 }
-*/
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    // Return the number of rows in the section.
+    NSLog(@"Number of rows is %d", (unsigned int)[_stats.history count]);
+    return [_stats.history count];
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ListPrototypeCell" forIndexPath:indexPath];
+    //NSLog(@"I'm viewing...");
+    NSString *item = [_stats.history objectAtIndex:indexPath.row];
+    cell.textLabel.text = item;
+    if ([item isEqualToString:@"W"]) {
+        cell.backgroundColor=[UIColor greenColor];
+        cell.textLabel.textColor=[UIColor greenColor];
+    } else {
+        cell.backgroundColor=[UIColor redColor];
+        cell.textLabel.textColor=[UIColor redColor];
+    }
+    cell.layer.borderColor = [UIColor blackColor].CGColor;
+    cell.layer.borderWidth = 1.0f;
+    return cell;
+}
 
 @end
