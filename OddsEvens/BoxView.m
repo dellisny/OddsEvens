@@ -19,7 +19,6 @@
 - (void)drawRect:(CGRect)rect
 {
     // Drawing Rect
-    NSLog(@"Drawing...");
     if (_boxState == OEBoxNone) {
         [[UIColor whiteColor] setFill];  // clear
 

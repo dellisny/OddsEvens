@@ -27,13 +27,18 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     NSLog(@"I'm here");
+    
+    [self setUpConnection];
+    [self setUpUi];
+    [self setUpConnection];
+    
     _stats=[[StatMan alloc] init];
     _odds=FALSE;
     [self toggleOE];
     [self cleanUI];
     [self redraw];
-    // Do any additional setup after loading the view.
 }
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -59,6 +64,17 @@
 }
 
 - (void)push:(int)val {
+    
+    NSString *message = @"Hello, World!";
+    NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error = nil;
+    if (![self.session sendData:data
+                        toPeers:_session.connectedPeers
+                       withMode:MCSessionSendDataReliable
+                          error:&error]) {
+        NSLog(@"[Data Send Error] %@", error);
+    }
+    
     int pick = [self pick];
     _userPick.text = [NSString stringWithFormat:@"%d",val];
     
@@ -114,7 +130,8 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
-    NSLog(@"Number of rows is %d", (unsigned int)[_stats.history count]);
+    NSLog(@"Number of rows in TableView is %d", (unsigned int)[_stats.history count]);
+    NSLog(@"The view is %@",tableView);
     return [_stats.history count];
 }
 
@@ -134,6 +151,84 @@
     cell.layer.borderColor = [UIColor blackColor].CGColor;
     cell.layer.borderWidth = 1.0f;
     return cell;
+}
+
+#pragma mark Connections
+
+-(void) setUpUi
+{
+    //Set the text on the navigation bar
+    //self.title = @"OddsEvens";
+    
+    //Create a bar button item with Apples default search icon
+    //UIBarButtonItem *searchButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchForPeers)];
+    
+    //Add the search button to the nav bar.
+    //self.navigationItem.rightBarButtonItem = searchButton;
+}
+
+-(void) setUpConnection {
+    //Set our display name to be the name of the device
+    self.peerID = [[MCPeerID alloc] initWithDisplayName:[UIDevice currentDevice].name];
+    
+    //Create a new session with our peerID
+    self.session = [[MCSession alloc] initWithPeer:self.peerID];
+    
+    //Create a browser view with our service type and session
+    self.browserViewController = [[MCBrowserViewController alloc] initWithServiceType:@"OddsEvens" session:self.session];
+    self.browserViewController.maximumNumberOfPeers = 2;
+    
+    self.browserViewController.delegate = self;
+    
+    //Create an advertiser assistant to make our device discoverable
+    self.advertiserAssistant = [[MCAdvertiserAssistant alloc] initWithServiceType:@"OddsEvens" discoveryInfo:Nil session:self.session];
+    
+    //Start advertising!
+    [self.advertiserAssistant start];
+}
+
+-(void) searchForPeers
+{
+    [self presentViewController:self.browserViewController animated:YES completion:nil];
+}
+
+#pragma mark Session Delegate Methods
+
+//Called when a peer connects to the user, or the users device connects to a peer.
+- (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state{
+    NSLog(@"Got Peer into %@ %d", peerID, (int) state);
+}
+
+// Called when the users device recieves data from a peer
+- (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
+    NSLog(@"Got Peer data %@ %@", peerID, data);
+}
+
+// Called when the users device recieves a byte stream from a peer
+- (void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID{
+    
+}
+
+// Called when the users device recieves a resource from a peer
+- (void)session:(MCSession *)session didStartReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID withProgress:(NSProgress *)progress{
+    
+}
+
+// Called when the users device has finished recieving data from a peer.
+- (void)session:(MCSession *)session didFinishReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID atURL:(NSURL *)localURL withError:(NSError *)error{
+    
+}
+
+#pragma BrowserView Delegate Methods
+
+//Called when the user has selected a peer to connect to
+- (void)browserViewControllerDidFinish:(MCBrowserViewController *)browserViewController {
+    [self.browserViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+// Called when the user has tapped the Cancel button the peer selection screen.
+- (void)browserViewControllerWasCancelled:(MCBrowserViewController *)browserViewController {
+    [self.browserViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
