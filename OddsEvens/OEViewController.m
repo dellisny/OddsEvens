@@ -47,6 +47,7 @@
     _statLine.text=[_stats statString];
     _streakLine.text=[_stats streakString];
     [_historyView reloadData];
+    [_historyView scrollRectToVisible:CGRectMake(0, _historyView.contentSize.height - _historyView.bounds.size.height, _historyView.bounds.size.width, _historyView.bounds.size.height) animated:YES];
 }
 
 - (int) pick {
