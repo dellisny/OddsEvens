@@ -65,7 +65,7 @@
 
 - (void)push:(int)val {
     
-    NSString *message = @"Hello, World!";
+    NSString *message = [NSString stringWithFormat:@"%d",val];
     NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
     NSError *error = nil;
     if (![self.session sendData:data
@@ -130,8 +130,8 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
-    NSLog(@"Number of rows in TableView is %d", (unsigned int)[_stats.history count]);
-    NSLog(@"The view is %@",tableView);
+    //NSLog(@"Number of rows in TableView is %d", (unsigned int)[_stats.history count]);
+    //NSLog(@"The view is %@",tableView);
     return [_stats.history count];
 }
 
@@ -173,6 +173,7 @@
     
     //Create a new session with our peerID
     self.session = [[MCSession alloc] initWithPeer:self.peerID];
+    self.session.delegate = self;
     
     //Create a browser view with our service type and session
     self.browserViewController = [[MCBrowserViewController alloc] initWithServiceType:@"OddsEvens" session:self.session];
@@ -196,12 +197,13 @@
 
 //Called when a peer connects to the user, or the users device connects to a peer.
 - (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state{
-    NSLog(@"Got Peer into %@ %d", peerID, (int) state);
+    NSLog(@"Got Peer info %@ %d", peerID, (int) state);
 }
 
 // Called when the users device recieves data from a peer
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
-    NSLog(@"Got Peer data %@ %@", peerID, data);
+    NSString* newStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSLog(@"Got Peer data %@ %@", peerID, newStr);
 }
 
 // Called when the users device recieves a byte stream from a peer
