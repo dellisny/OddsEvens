@@ -13,9 +13,16 @@
 
 @property StatMan *stats;
 @property BOOL oddsP;
+
+// Game is local or remote?
 @property BOOL localP;
+
 @property int remotePick;
 @property int localPick;
+
+// controlling the state of the remote game
+@property BOOL needLocal;
+@property BOOL needRemote;
 
 
 @end
@@ -39,8 +46,11 @@
     _stats=[[StatMan alloc] init];
     _oddsP=FALSE;
     _localP=TRUE;
+    
     _remotePick=0;
-    _localPick=0;
+    
+    _needLocal=TRUE;
+    _needRemote=TRUE;
     _waitLabel.hidden=TRUE;
     
     [self toggleOE];
@@ -75,8 +85,10 @@
 - (void)push:(int)val {
     
     _userPick.text = [NSString stringWithFormat:@"%d",val];
-
+    
     if (!_localP) {
+        _needLocal=FALSE;
+
         NSString *message = [NSString stringWithFormat:@"%d",val];
         NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
         NSError *error = nil;
@@ -86,7 +98,7 @@
                               error:&error]) {
             NSLog(@"[Data Send Error] %@", error);
         }
-        if (_remotePick) {
+        if (!_needRemote) {
             [self finishPlay:_remotePick];
         }
         else {
@@ -120,7 +132,9 @@
         }
     }
     [self redraw];
-    _localPick=_remotePick=0;
+    _remotePick=0;
+    _needLocal=TRUE;
+    _needRemote=TRUE;
 }
 
 - (IBAction)pushOne {
@@ -235,7 +249,9 @@
     NSLog(@"Got Peer data %d", _remotePick);
     if (!_localP) {
         _waitLabel.hidden=TRUE;
-        [self finishPlay:_remotePick];
+        if (!_needLocal) {
+            [self finishPlay:_remotePick];
+        }
     }
 }
 
