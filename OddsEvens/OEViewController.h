@@ -12,6 +12,13 @@
 
 @interface OEViewController : UIViewController <MCBrowserViewControllerDelegate,MCSessionDelegate>
 
+
+typedef NS_ENUM (NSInteger,
+                 OEGameMode ) {
+    OELocal,
+    OERemote,
+};
+
 - (IBAction)pushOne;
 - (IBAction)pushTwo;
 - (IBAction)resetStats;
@@ -29,6 +36,13 @@
 
 // connection stuff
 
+typedef NS_ENUM (NSInteger,
+                 OERemoteState ) {
+    OERemoteNone,
+    OERemoteSent,
+    OERemoteReceiveNoSend,
+    OERemoteDone,
+};
 @property (nonatomic, retain) MCBrowserViewController *browserViewController;
 @property (nonatomic, retain) MCAdvertiserAssistant *advertiserAssistant;
 @property (nonatomic, retain) MCSession *session;
