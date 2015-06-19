@@ -18,7 +18,7 @@
 - (IBAction)toggleOE;
 - (IBAction)searchForPeers;
 
-
+@property (weak, nonatomic) IBOutlet UILabel *waitLabel;
 @property (weak, nonatomic) IBOutlet UILabel *userPick;
 @property (weak, nonatomic) IBOutlet UILabel *gamePick;
 @property (weak, nonatomic) IBOutlet UILabel *streakLine;

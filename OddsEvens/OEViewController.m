@@ -12,7 +12,11 @@
 @interface OEViewController ()
 
 @property StatMan *stats;
-@property BOOL odds;
+@property BOOL oddsP;
+@property BOOL localP;
+@property int remotePick;
+@property int localPick;
+
 
 @end
 
@@ -33,7 +37,12 @@
     [self setUpConnection];
     
     _stats=[[StatMan alloc] init];
-    _odds=FALSE;
+    _oddsP=FALSE;
+    _localP=TRUE;
+    _remotePick=0;
+    _localPick=0;
+    _waitLabel.hidden=TRUE;
+    
     [self toggleOE];
     [self cleanUI];
     [self redraw];
@@ -65,20 +74,35 @@
 
 - (void)push:(int)val {
     
-    NSString *message = [NSString stringWithFormat:@"%d",val];
-    NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
-    NSError *error = nil;
-    if (![self.session sendData:data
-                        toPeers:_session.connectedPeers
-                       withMode:MCSessionSendDataReliable
-                          error:&error]) {
-        NSLog(@"[Data Send Error] %@", error);
-    }
-    
-    int pick = [self pick];
     _userPick.text = [NSString stringWithFormat:@"%d",val];
+
+    if (!_localP) {
+        NSString *message = [NSString stringWithFormat:@"%d",val];
+        NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
+        NSError *error = nil;
+        if (![self.session sendData:data
+                            toPeers:_session.connectedPeers
+                           withMode:MCSessionSendDataReliable
+                              error:&error]) {
+            NSLog(@"[Data Send Error] %@", error);
+        }
+        if (_remotePick) {
+            [self finishPlay:_remotePick];
+        }
+        else {
+            _waitLabel.hidden=FALSE;
+        }
+    }
+    else {
+        int pick = [self pick];
+        [self finishPlay:pick];
+    }
+}
+
+- (void) finishPlay:(int)pick {
     
-    if (_odds) {
+    int val = _userPick.text.intValue;
+    if (_oddsP) {
         if (pick!=val) {
             _statusBox.boxState=OEBoxWin;
             [_stats addWin];
@@ -96,13 +120,16 @@
         }
     }
     [self redraw];
+    _localPick=_remotePick=0;
 }
 
 - (IBAction)pushOne {
+    _localPick=1;
     [self push:1];
 }
 
 - (IBAction)pushTwo {
+    _localPick=2;
     [self push:2];
 }
 
@@ -113,9 +140,9 @@
 }
 
 - (IBAction)toggleOE {
-    _odds=!_odds;
+    _oddsP=!_oddsP;
     [_stats resetStats];
-    NSString *titleForButton=(_odds)?@"Odds":@"Evens";
+    NSString *titleForButton=(_oddsP)?@"Odds":@"Evens";
     [_toggleButton setTitle:titleForButton forState: UIControlStateNormal];
     [self cleanUI];
     [self redraw];
@@ -198,12 +225,18 @@
 //Called when a peer connects to the user, or the users device connects to a peer.
 - (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state{
     NSLog(@"Got Peer info %@ %d", peerID, (int) state);
+    _localP=FALSE;
 }
 
 // Called when the users device recieves data from a peer
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
     NSString* newStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    NSLog(@"Got Peer data %@ %@", peerID, newStr);
+    _remotePick=[newStr intValue];
+    NSLog(@"Got Peer data %d", _remotePick);
+    if (!_localP) {
+        _waitLabel.hidden=TRUE;
+        [self finishPlay:_remotePick];
+    }
 }
 
 // Called when the users device recieves a byte stream from a peer
