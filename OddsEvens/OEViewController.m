@@ -22,6 +22,9 @@
 @property int localPick;
 @property DELog *theLog;
 
+@property BOOL needLocal;
+@property BOOL needRemote;
+
 @end
 
 @implementation OEViewController
