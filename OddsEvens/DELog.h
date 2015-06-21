@@ -38,16 +38,9 @@ typedef enum _DELogLevelType : NSUInteger {
 + (DELog *)sharedInstance;
 
 @property id delegate;
-
-- (void)setLogLevel:(DELogLevelType)level;
-- (DELogLevelType)logLevel;
-
-- (void)setLogFileName:(NSString *)aFile;
-- (NSString *)logFileName;
-
-- (void)setLoggingEnabled:(BOOL)flag;
-- (BOOL)loggingEnabled;
-
+@property BOOL loggingEnabled;
+@property DELogLevelType logLevel;
+@property NSString *logFileName;
 
 - (void)logAt:(DELogLevelType)level msg:(NSString *)pattern, ...;
 - (void)vlogAt:(DELogLevelType)level pat:(NSString *)pattern vals:(va_list)ap;

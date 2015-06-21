@@ -11,15 +11,11 @@
 
 @interface DELog ()
 
-@property NSFileHandle *de_logFile;
-@property DELogLevelType de_logLevel;
-@property NSString *de_logFileName;
-@property BOOL de_logEnabled;
-@property NSDateFormatter *de_formatter;
+@property NSFileHandle *logFile;
+@property NSDateFormatter *formatter;
 
 - (void)openLogFile;
 - (void)truncateLog;
-
 
 @end
 
@@ -49,44 +45,15 @@ static const char *levelMap[]={
 
 - init {
     self=[super init];
-    _de_logEnabled=NO;
-    _de_logFile=nil;
-    _de_formatter=[[NSDateFormatter alloc] init];
-    [_de_formatter setDateFormat:@"y-M-d H:m:s:ms"];
+    _loggingEnabled=NO;
+    _logFile=nil;
+    _formatter=[[NSDateFormatter alloc] init];
+    [_formatter setDateFormat:@"y-M-d H:m:s:ms"];
     [self setLogLevel:DELOG_Last];
     [self setLogFileName:nil];
     return self;
 }
 
-
-- (DELogLevelType)logLevel {
-    return _de_logLevel;
-}
-
-- (void)setLogLevel:(DELogLevelType)level {
-    _de_logLevel=level;
-    if (level>=DELOG_Last) {
-        [self setLoggingEnabled:NO];
-    } else {
-        [self setLoggingEnabled:YES];
-    }
-}
-
-
-- (BOOL)loggingEnabled
-{
-    return _de_logEnabled;
-}
-
-- (void)setLoggingEnabled:(BOOL)flag
-{
-    _de_logEnabled=flag;
-    if (_de_logEnabled) {
-        if (_de_logFileName) {
-            [self openLogFile];
-        }
-    }
-}
 
 - (void)logAt:(DELogLevelType)level msg:(NSString *)pattern, ...
 {
@@ -102,11 +69,16 @@ static const char *levelMap[]={
 {
     NSString *baseString, *indentString;
     NSString *dateString, *logString;
-    NSDate *date;
+    //NSDate *date;
     static int indent=0;
     
-    if ((!_de_logEnabled) || (level < _de_logLevel) || (level >= DELOG_Last)) {
+    if ((!_loggingEnabled) || (level < _logLevel) || (level >= DELOG_Last)) {
         return;
+    }
+    
+    // Open the file if it isn't open
+    if (!_logFile) {
+        [self openLogFile];
     }
     
     // Manage indentation
@@ -122,14 +94,16 @@ static const char *levelMap[]={
     logString=[NSString stringWithFormat:@"%@(%5.5s) %@\n",
                indentString, levelMap[level], baseString];
     
-    if (_de_logEnabled && level >= _de_logLevel && level < DELOG_Last) {
+    if (_loggingEnabled && level >= _logLevel && level < DELOG_Last) {
         
         NSLog(@"%@",logString);
        
         // Send to File
-        if (_de_logFile) {
-            date=[NSDate date];
-            dateString=[_de_formatter stringFromDate:date];
+        if (_logFile) {
+            
+            //date=[NSDate date];
+            //dateString=[_formatter stringFromDate:date];
+            dateString=@"";
             
             logString=[NSString stringWithFormat:@"%@(%5.5s) %@ %@\n",
                        indentString, levelMap[level], dateString, baseString];
@@ -137,8 +111,8 @@ static const char *levelMap[]={
             NSData *dataForFile=[NSData dataWithBytes:[logString cStringUsingEncoding:NSUTF8StringEncoding]
                                                length:[logString lengthOfBytesUsingEncoding:NSUTF8StringEncoding]];
 
-            [_de_logFile writeData:dataForFile];
-            [_de_logFile synchronizeFile];
+            [_logFile writeData:dataForFile];
+            [_logFile synchronizeFile];
 
         }
     }
@@ -227,54 +201,44 @@ static const char *levelMap[]={
 {
     BOOL result;
     
-    // If we alrady have file open, return
-    if (_de_logFile) {
-        return;
+    // if the filename is nil, use default
+    if (!_logFileName) {
+        [self setLogFileName:[NSString stringWithFormat:@"/tmp/%@_%@.log",
+                              [[NSProcessInfo processInfo] processName],
+                              [[NSProcessInfo processInfo] globallyUniqueString]]];
     }
     
-    result=[[NSFileManager defaultManager] isWritableFileAtPath:_de_logFileName];
+    // if we already had a file open, close it
+    if (_logFile) {
+        [_logFile closeFile];
+    }
+    
+    // Create the file
+    result=[[NSFileManager defaultManager] isWritableFileAtPath:_logFileName];
     if (!result) {
-        result=[[NSFileManager defaultManager] createFileAtPath:_de_logFileName contents:nil attributes:nil];
+        result=[[NSFileManager defaultManager] createFileAtPath:_logFileName contents:nil attributes:nil];
         if (!result) {
-            //[NSException raise:@"DEFileCreateionException"
-            //            format:@"Failed to create log file (%@)", _de_logFileName];
-            _de_logFile=nil;
+            NSLog(@"Error creating file (%@)",_logFileName);
+            _logFile=nil;
             return;
         }
     }
     
-    _de_logFile=[NSFileHandle fileHandleForWritingAtPath:_de_logFileName];
-    if (!_de_logFile) {
-        //[NSException raise:@"DEFileOpenException"
-        //            format:@"Failed to open log file (%@)", _de_logFileName];
-        _de_logFile=nil;
+    // Open the file
+    _logFile=[NSFileHandle fileHandleForWritingAtPath:_logFileName];
+    if (!_logFile) {
+        NSLog(@"Error opening file (%@)",_logFileName);
+        _logFile=nil;
         return;
     }
-    [_de_logFile seekToEndOfFile];
+    [_logFile seekToEndOfFile];
 }
 
 - (void)truncateLog {
-    if (_de_logFile) {
-        [_de_logFile truncateFileAtOffset:0];
+    if (_logFile) {
+        [_logFile truncateFileAtOffset:0];
     }
 }
 
-- (void)setLogFileName:(NSString *)aFile {
-    
-    [self setDe_logFileName:[NSString stringWithFormat:@"/tmp/%@_%@.log",
-                             [[NSProcessInfo processInfo] processName],
-                             [[NSProcessInfo processInfo] globallyUniqueString]]];
-
-    if (aFile != _de_logFileName) {
-        if (_de_logFile) {
-            [_de_logFile closeFile];
-            _de_logFile=nil;
-        }
-    }
-}
-
-- (NSString *)logFileName {
-    return _de_logFileName;
-}
 
 @end

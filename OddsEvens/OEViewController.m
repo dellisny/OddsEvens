@@ -16,7 +16,7 @@
 @property BOOL oddsP;
 
 // Game is local or remote?
-@property BOOL localP;
+@property BOOL isGameLocal;
 
 @property int remotePick;
 @property int localPick;
@@ -39,8 +39,9 @@
     [super viewDidLoad];
     NSLog(@"I'm here");
     _theLog=[DELog sharedInstance];
+    [_theLog setLogFileName:@"/tmp/Hola.log"];
     [_theLog setLogLevel:DELOG_Debug];
-  //  [_theLog setLogFileName:@"Hola"];
+    [_theLog setLoggingEnabled:TRUE];    
     [_theLog logTrace:@"I'm here too!"];
     
     [self setUpConnection];
@@ -49,13 +50,13 @@
     
     _stats=[[StatMan alloc] init];
     _oddsP=FALSE;
-    _localP=TRUE;
+    _isGameLocal=TRUE;
     
     _remotePick=0;
     
     _needLocal=TRUE;
     _needRemote=TRUE;
-    _waitLabel.hidden=TRUE;
+    _waitLabel.text=@"";
     
     [self toggleOE];
     [self cleanUI];
@@ -71,7 +72,7 @@
 #pragma mark - Game Actions
 
 - (void) redraw {
-    [_theLog logTrace:@"redraw"];
+    [_theLog logTrace:@"redraw\n"];
     [_statusBox setNeedsDisplay];
     _statLine.text=[_stats statString];
     _streakLine.text=[_stats streakString];
@@ -94,7 +95,8 @@
 
     _userPick.text = [NSString stringWithFormat:@"%d",val];
     
-    if (!_localP) {
+    // Remote Game
+    if (!_isGameLocal) {
         _needLocal=FALSE;
 
         NSString *message = [NSString stringWithFormat:@"%d",val];
@@ -107,16 +109,17 @@
             [_theLog logTrace:@"Data Send Error %@", error];
         }
         if (!_needRemote) {
+            _waitLabel.text=@"";
             [self finishPlay:_remotePick];
+        } else {
+            _waitLabel.text=@"Them";
         }
-        else {
-            _waitLabel.hidden=FALSE;
-        }
-    }
-    else {
+    } else {     // Local Game
+
         int pick = [self pick];
         [self finishPlay:pick];
     }
+    [self.view setNeedsDisplay];
 }
 
 - (void) finishPlay:(int)pick {
@@ -126,21 +129,26 @@
     if (_oddsP) {
         if (pick!=val) {
             _statusBox.boxState=OEBoxWin;
+            [_theLog logTrace:@"I won"];
             [_stats addWin];
         } else {
             _statusBox.boxState=OEBoxLose;
+            [_theLog logTrace:@"I lost"];
             [_stats addLoss];
         }
     } else {
         if (pick==val) {
             _statusBox.boxState=OEBoxWin;
+            [_theLog logTrace:@"I won"];
             [_stats addWin];
         } else {
             _statusBox.boxState=OEBoxLose;
+            [_theLog logTrace:@"I lost"];
             [_stats addLoss];
         }
     }
     [self redraw];
+    _localPick=0;
     _remotePick=0;
     _needLocal=TRUE;
     _needRemote=TRUE;
@@ -247,7 +255,7 @@
 //Called when a peer connects to the user, or the users device connects to a peer.
 - (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state{
     [_theLog logTrace:@"Got Peer info %@ %d", peerID, (int) state];
-    _localP=FALSE;
+    _isGameLocal=FALSE;
 }
 
 // Called when the users device recieves data from a peer
@@ -255,12 +263,14 @@
     NSString* newStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     _remotePick=[newStr intValue];
     [_theLog logTrace:@"Got Peer data %d", _remotePick];
-    if (_localPick) {
-        _waitLabel.hidden=TRUE;
-        if (!_needLocal) {
-            [self finishPlay:_remotePick];
-        }
+    _needRemote=FALSE;
+    if (!_needLocal) {
+        _waitLabel.text=@"";
+        [self finishPlay:_remotePick];
+    } else {
+        _waitLabel.text=@"You";
     }
+    [self.view setNeedsDisplay];
 }
 
 // Called when the users device recieves a byte stream from a peer
