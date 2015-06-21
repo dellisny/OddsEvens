@@ -14,7 +14,10 @@
 
 @property StatMan *stats;
 @property BOOL oddsP;
+
+// Game is local or remote?
 @property BOOL localP;
+
 @property int remotePick;
 @property int localPick;
 @property DELog *theLog;
@@ -44,8 +47,11 @@
     _stats=[[StatMan alloc] init];
     _oddsP=FALSE;
     _localP=TRUE;
+    
     _remotePick=0;
-    _localPick=0;
+    
+    _needLocal=TRUE;
+    _needRemote=TRUE;
     _waitLabel.hidden=TRUE;
     
     [self toggleOE];
@@ -84,8 +90,10 @@
     [_theLog logTrace:@"push %d", val];
 
     _userPick.text = [NSString stringWithFormat:@"%d",val];
-
+    
     if (!_localP) {
+        _needLocal=FALSE;
+
         NSString *message = [NSString stringWithFormat:@"%d",val];
         NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
         NSError *error = nil;
@@ -95,7 +103,7 @@
                               error:&error]) {
             [_theLog logTrace:@"Data Send Error %@", error];
         }
-        if (_remotePick) {
+        if (!_needRemote) {
             [self finishPlay:_remotePick];
         }
         else {
@@ -130,7 +138,9 @@
         }
     }
     [self redraw];
-    _localPick=_remotePick=0;
+    _remotePick=0;
+    _needLocal=TRUE;
+    _needRemote=TRUE;
 }
 
 - (IBAction)pushOne {
@@ -244,7 +254,9 @@
     [_theLog logTrace:@"Got Peer data %d", _remotePick];
     if (_localPick) {
         _waitLabel.hidden=TRUE;
-        [self finishPlay:_remotePick];
+        if (!_needLocal) {
+            [self finishPlay:_remotePick];
+        }
     }
 }
 
