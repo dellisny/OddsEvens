@@ -15,6 +15,7 @@
 		8E5849861B2B172000F73D79 /* OddsEvensTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5849851B2B172000F73D79 /* OddsEvensTests.m */; };
 		8E5849941B2B25B900F73D79 /* OEViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5849931B2B25B800F73D79 /* OEViewController.m */; };
 		8E5849971B2B294700F73D79 /* StatMan.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E5849961B2B294700F73D79 /* StatMan.m */; };
+		8E676A331B3644B30070DF8A /* DELog.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E676A321B3644B30070DF8A /* DELog.m */; };
 		8EF047201B2B6765006DA057 /* BoxView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EF0471F1B2B6765006DA057 /* BoxView.m */; };
 /* End PBXBuildFile section */
 
@@ -44,6 +45,8 @@
 		8E5849931B2B25B800F73D79 /* OEViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OEViewController.m; sourceTree = "<group>"; };
 		8E5849951B2B294700F73D79 /* StatMan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatMan.h; sourceTree = "<group>"; };
 		8E5849961B2B294700F73D79 /* StatMan.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatMan.m; sourceTree = "<group>"; };
+		8E676A311B3644B20070DF8A /* DELog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DELog.h; sourceTree = "<group>"; };
+		8E676A321B3644B30070DF8A /* DELog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DELog.m; sourceTree = "<group>"; };
 		8EF0471E1B2B6765006DA057 /* BoxView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoxView.h; sourceTree = "<group>"; };
 		8EF0471F1B2B6765006DA057 /* BoxView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoxView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -92,6 +95,8 @@
 				8E5849921B2B25B800F73D79 /* OEViewController.h */,
 				8E5849931B2B25B800F73D79 /* OEViewController.m */,
 				8EF0471E1B2B6765006DA057 /* BoxView.h */,
+				8E676A311B3644B20070DF8A /* DELog.h */,
+				8E676A321B3644B30070DF8A /* DELog.m */,
 				8EF0471F1B2B6765006DA057 /* BoxView.m */,
 				8E5849951B2B294700F73D79 /* StatMan.h */,
 				8E5849961B2B294700F73D79 /* StatMan.m */,
@@ -233,6 +238,7 @@
 				8E5849971B2B294700F73D79 /* StatMan.m in Sources */,
 				8E58496F1B2B172000F73D79 /* AppDelegate.m in Sources */,
 				8E58496C1B2B172000F73D79 /* main.m in Sources */,
+				8E676A331B3644B30070DF8A /* DELog.m in Sources */,
 				8EF047201B2B6765006DA057 /* BoxView.m in Sources */,
 				8E5849941B2B25B900F73D79 /* OEViewController.m in Sources */,
 			);

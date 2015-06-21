@@ -8,6 +8,7 @@
 
 #import "OEViewController.h"
 #import "StatMan.h"
+#import "DELog.h"
 
 @interface OEViewController ()
 
@@ -16,7 +17,7 @@
 @property BOOL localP;
 @property int remotePick;
 @property int localPick;
-
+@property DELog *theLog;
 
 @end
 
@@ -31,6 +32,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     NSLog(@"I'm here");
+    _theLog=[DELog sharedInstance];
+    [_theLog setLogLevel:DELOG_Debug];
+  //  [_theLog setLogFileName:@"Hola"];
+    [_theLog logTrace:@"I'm here too!"];
     
     [self setUpConnection];
     [self setUpUi];
@@ -57,6 +62,7 @@
 #pragma mark - Game Actions
 
 - (void) redraw {
+    [_theLog logTrace:@"redraw"];
     [_statusBox setNeedsDisplay];
     _statLine.text=[_stats statString];
     _streakLine.text=[_stats streakString];
@@ -65,6 +71,8 @@
 }
 
 - (int) pick {
+    [_theLog logTrace:@"pick"];
+
     // Get random value between 0 and 1
     int x = arc4random() % 2;
     x+=1;
@@ -73,7 +81,8 @@
 }
 
 - (void)push:(int)val {
-    
+    [_theLog logTrace:@"push %d", val];
+
     _userPick.text = [NSString stringWithFormat:@"%d",val];
 
     if (!_localP) {
@@ -84,7 +93,7 @@
                             toPeers:_session.connectedPeers
                            withMode:MCSessionSendDataReliable
                               error:&error]) {
-            NSLog(@"[Data Send Error] %@", error);
+            [_theLog logTrace:@"Data Send Error %@", error];
         }
         if (_remotePick) {
             [self finishPlay:_remotePick];
@@ -100,7 +109,8 @@
 }
 
 - (void) finishPlay:(int)pick {
-    
+    [_theLog logTrace:@"finishPlay:"];
+ 
     int val = _userPick.text.intValue;
     if (_oddsP) {
         if (pick!=val) {
@@ -165,7 +175,6 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ListPrototypeCell" forIndexPath:indexPath];
-    //NSLog(@"I'm viewing...");
     NSString *item = [_stats.history objectAtIndex:indexPath.row];
     cell.textLabel.text = item;
     if ([item isEqualToString:@"W"]) {
@@ -224,7 +233,7 @@
 
 //Called when a peer connects to the user, or the users device connects to a peer.
 - (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state{
-    NSLog(@"Got Peer info %@ %d", peerID, (int) state);
+    [_theLog logTrace:@"Got Peer info %@ %d", peerID, (int) state];
     _localP=FALSE;
 }
 
@@ -232,8 +241,8 @@
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
     NSString* newStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     _remotePick=[newStr intValue];
-    NSLog(@"Got Peer data %d", _remotePick);
-    if (!_localP) {
+    [_theLog logTrace:@"Got Peer data %d", _remotePick];
+    if (_localPick) {
         _waitLabel.hidden=TRUE;
         [self finishPlay:_remotePick];
     }
