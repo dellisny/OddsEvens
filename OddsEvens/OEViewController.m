@@ -18,8 +18,8 @@
 // Game is local or remote?
 @property BOOL isGameLocal;
 
-@property int remotePick;
-@property int localPick;
+@property NSNumber *remotePick;
+@property NSNumber *localPick;
 @property DELog *theLog;
 
 @property BOOL needLocal;
@@ -52,11 +52,13 @@
     _oddsP=FALSE;
     _isGameLocal=TRUE;
     
-    _remotePick=0;
+    _remotePick=nil;
+    _localPick=nil;
     
     _needLocal=TRUE;
     _needRemote=TRUE;
     _waitLabel.text=@"";
+    _peerName.text=@"Local";
     
     [self toggleOE];
     [self cleanUI];
@@ -80,14 +82,14 @@
     [_historyView scrollRectToVisible:CGRectMake(0, _historyView.contentSize.height - _historyView.bounds.size.height, _historyView.bounds.size.width, _historyView.bounds.size.height) animated:YES];
 }
 
-- (int) pick {
+- (NSNumber *) pick {
     [_theLog logTrace:@"pick"];
 
     // Get random value between 0 and 1
     int x = arc4random() % 2;
     x+=1;
     _gamePick.text = [NSString stringWithFormat:@"%d",x];
-    return x;
+    return [NSNumber numberWithInt:x];
 }
 
 - (void)push:(int)val {
@@ -108,59 +110,68 @@
                               error:&error]) {
             [_theLog logTrace:@"Data Send Error %@", error];
         }
+        [self.view setNeedsDisplay];
         if (!_needRemote) {
             _waitLabel.text=@"";
             [self finishPlay:_remotePick];
-        } else {
+        }
+        else {
             _waitLabel.text=@"Them";
         }
-    } else {     // Local Game
-
-        int pick = [self pick];
+    }
+    // Local Game
+    else {
+        NSNumber *pick = [self pick];
         [self finishPlay:pick];
     }
-    [self.view setNeedsDisplay];
 }
 
-- (void) finishPlay:(int)pick {
+- (void) finishPlay:(NSNumber *)pick {
     [_theLog logTrace:@"finishPlay:"];
  
-    int val = _userPick.text.intValue;
+    int val = [_localPick intValue];
+    int p=[pick intValue];
+    
     if (_oddsP) {
-        if (pick!=val) {
+        if (p!=val) {
             _statusBox.boxState=OEBoxWin;
             [_theLog logTrace:@"I won"];
             [_stats addWin];
-        } else {
+        }
+        else {
             _statusBox.boxState=OEBoxLose;
             [_theLog logTrace:@"I lost"];
             [_stats addLoss];
         }
-    } else {
-        if (pick==val) {
+    }
+    else {
+        if (p==val) {
             _statusBox.boxState=OEBoxWin;
             [_theLog logTrace:@"I won"];
             [_stats addWin];
-        } else {
+        }
+        else {
             _statusBox.boxState=OEBoxLose;
             [_theLog logTrace:@"I lost"];
             [_stats addLoss];
         }
     }
     [self redraw];
-    _localPick=0;
-    _remotePick=0;
+    _localPick=nil;
+    _remotePick=nil;
     _needLocal=TRUE;
     _needRemote=TRUE;
+    _waitLabel.text=@"";
+
 }
 
 - (IBAction)pushOne {
-    _localPick=1;
+    _localPick=[NSNumber numberWithInt:1];
     [self push:1];
 }
 
 - (IBAction)pushTwo {
-    _localPick=2;
+    _localPick=[NSNumber numberWithInt:2];
     [self push:2];
 }
 
@@ -201,7 +212,8 @@
     if ([item isEqualToString:@"W"]) {
         cell.backgroundColor=[UIColor greenColor];
         cell.textLabel.textColor=[UIColor greenColor];
-    } else {
+    }
+    else {
         cell.backgroundColor=[UIColor redColor];
         cell.textLabel.textColor=[UIColor redColor];
     }
@@ -255,22 +267,35 @@
 //Called when a peer connects to the user, or the users device connects to a peer.
 - (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state{
     [_theLog logTrace:@"Got Peer info %@ %d", peerID, (int) state];
-    _isGameLocal=FALSE;
+    
+    // On disconnect
+    if (state==MCSessionStateNotConnected) {
+        _isGameLocal=TRUE;
+        [_theLog logTrace:@"Lost peer, going back to local mode"];
+        [_peerName performSelectorOnMainThread: @selector(setText:) withObject:@"Local" waitUntilDone:TRUE];
+        [self resetStats];
+    }
+    else if (state==MCSessionStateConnected) {
+        [_theLog logTrace:@"Setting peer label to (%@)", [peerID displayName]];
+        _isGameLocal=FALSE;
+        [_peerName performSelectorOnMainThread: @selector(setText:) withObject:[peerID displayName] waitUntilDone:TRUE];
+    }
 }
 
 // Called when the users device recieves data from a peer
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
     NSString* newStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    _remotePick=[newStr intValue];
+    _remotePick=[NSNumber numberWithInt:[newStr intValue]];
     [_theLog logTrace:@"Got Peer data %d", _remotePick];
     _needRemote=FALSE;
     if (!_needLocal) {
-        _waitLabel.text=@"";
-        [self finishPlay:_remotePick];
-    } else {
-        _waitLabel.text=@"You";
+        [_waitLabel performSelectorOnMainThread: @selector(setText:) withObject:@"" waitUntilDone:TRUE];
+        [self performSelectorOnMainThread: @selector(finishPlay:) withObject:_remotePick waitUntilDone:TRUE];
     }
-    [self.view setNeedsDisplay];
+    else {
+        [_waitLabel performSelectorOnMainThread: @selector(setText:) withObject:@"You" waitUntilDone:TRUE];
+
+    }
 }
 
 // Called when the users device recieves a byte stream from a peer
