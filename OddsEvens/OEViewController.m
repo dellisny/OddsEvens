@@ -74,7 +74,7 @@
 #pragma mark - Game Actions
 
 - (void) redraw {
-    [_theLog logTrace:@"redraw\n"];
+    [_theLog logTrace:@"redraw"];
     [_statusBox setNeedsDisplay];
     _statLine.text=[_stats statString];
     _streakLine.text=[_stats streakString];
@@ -100,16 +100,8 @@
     // Remote Game
     if (!_isGameLocal) {
         _needLocal=FALSE;
-
-        NSString *message = [NSString stringWithFormat:@"%d",val];
-        NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
-        NSError *error = nil;
-        if (![self.session sendData:data
-                            toPeers:_session.connectedPeers
-                           withMode:MCSessionSendDataReliable
-                              error:&error]) {
-            [_theLog logTrace:@"Data Send Error %@", error];
-        }
+        
+        [self tellRemote:[NSNumber numberWithInt:val]];
         [self.view setNeedsDisplay];
         if (!_needRemote) {
             _waitLabel.text=@"";
@@ -123,6 +115,22 @@
     else {
         NSNumber *pick = [self pick];
         [self finishPlay:pick];
+    }
+}
+
+// 0 means toggle
+// 1 or 2 is the guess
+- (void) tellRemote:(NSNumber *)val {
+    NSString *message = [NSString stringWithFormat:@"%d",[val intValue]];
+    NSData *data = [message dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error = nil;
+    
+    [_theLog logTrace:@"Sending Peer data %d", [val intValue]];
+    if (![self.session sendData:data
+                        toPeers:_session.connectedPeers
+                       withMode:MCSessionSendDataReliable
+                          error:&error]) {
+        [_theLog logTrace:@"Data Send Error %@", error];
     }
 }
 
@@ -183,11 +191,20 @@
 
 - (IBAction)toggleOE {
     _oddsP=!_oddsP;
-    [_stats resetStats];
     NSString *titleForButton=(_oddsP)?@"Odds":@"Evens";
     [_toggleButton setTitle:titleForButton forState: UIControlStateNormal];
-    [self cleanUI];
+    
+    if (!_isGameLocal) {
+        [self tellRemote:[NSNumber numberWithInt:0]];
+    }
+    //[_stats resetStats];
+    //[self cleanUI];
     [self redraw];
+}
+
+
+- (IBAction)searchForPeers {
+    [self presentViewController:self.browserViewController animated:YES completion:nil];
 }
 
 #pragma mark - Table view data source
@@ -257,10 +274,6 @@
     [self.advertiserAssistant start];
 }
 
--(void) searchForPeers
-{
-    [self presentViewController:self.browserViewController animated:YES completion:nil];
-}
 
 #pragma mark Session Delegate Methods
 
@@ -285,16 +298,26 @@
 // Called when the users device recieves data from a peer
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
     NSString* newStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    _remotePick=[NSNumber numberWithInt:[newStr intValue]];
-    [_theLog logTrace:@"Got Peer data %d", _remotePick];
-    _needRemote=FALSE;
-    if (!_needLocal) {
-        [_waitLabel performSelectorOnMainThread: @selector(setText:) withObject:@"" waitUntilDone:TRUE];
-        [self performSelectorOnMainThread: @selector(finishPlay:) withObject:_remotePick waitUntilDone:TRUE];
+    int valFromPeer = [newStr intValue];
+    
+    [_theLog logTrace:@"Got Peer data %d", valFromPeer];
+    
+    // 0 means toggle
+    if (valFromPeer ==0) {
+        _isGameLocal=TRUE;
+        [self performSelectorOnMainThread: @selector(toggleOE) withObject:nil waitUntilDone:TRUE];
+        _isGameLocal=FALSE;
     }
     else {
-        [_waitLabel performSelectorOnMainThread: @selector(setText:) withObject:@"You" waitUntilDone:TRUE];
-
+        _remotePick=[NSNumber numberWithInt:valFromPeer];
+        _needRemote=FALSE;
+        if (!_needLocal) {
+            [_waitLabel performSelectorOnMainThread: @selector(setText:) withObject:@"" waitUntilDone:TRUE];
+            [self performSelectorOnMainThread: @selector(finishPlay:) withObject:_remotePick waitUntilDone:TRUE];
+        }
+        else {
+            [_waitLabel performSelectorOnMainThread: @selector(setText:) withObject:@"You" waitUntilDone:TRUE];
+        }
     }
 }
 
@@ -317,6 +340,11 @@
 
 //Called when the user has selected a peer to connect to
 - (void)browserViewControllerDidFinish:(MCBrowserViewController *)browserViewController {
+    // hack to force peer to be opposite of local in terms of odds/evens at the start
+    _isGameLocal=TRUE;
+    [self tellRemote:[NSNumber numberWithInt:0]];
+    _isGameLocal=FALSE;
+    
     [self.browserViewController dismissViewControllerAnimated:YES completion:nil];
 }
 

@@ -48,7 +48,7 @@ static const char *levelMap[]={
     _loggingEnabled=NO;
     _logFile=nil;
     _formatter=[[NSDateFormatter alloc] init];
-    [_formatter setDateFormat:@"y-M-d H:m:s:ms"];
+    [_formatter setDateFormat:@"yyyyMMdd HH:mm"];
     [self setLogLevel:DELOG_Last];
     [self setLogFileName:nil];
     return self;
@@ -69,7 +69,6 @@ static const char *levelMap[]={
 {
     NSString *baseString, *indentString;
     NSString *dateString, *logString;
-    //NSDate *date;
     static int indent=0;
     
     if ((!_loggingEnabled) || (level < _logLevel) || (level >= DELOG_Last)) {
@@ -101,9 +100,8 @@ static const char *levelMap[]={
         // Send to File
         if (_logFile) {
             
-            //date=[NSDate date];
-            //dateString=[_formatter stringFromDate:date];
-            dateString=@"";
+            NSDate *date=[NSDate date];
+            dateString=[_formatter stringFromDate:date];
             
             logString=[NSString stringWithFormat:@"%@(%5.5s) %@ %@\n",
                        indentString, levelMap[level], dateString, baseString];
