@@ -108,7 +108,7 @@
             [self finishPlay:_remotePick];
         }
         else {
-            _waitLabel.text=@"Them";
+            _waitLabel.text=@"Their Turn";
         }
     }
     // Local Game
@@ -316,7 +316,7 @@
             [self performSelectorOnMainThread: @selector(finishPlay:) withObject:_remotePick waitUntilDone:TRUE];
         }
         else {
-            [_waitLabel performSelectorOnMainThread: @selector(setText:) withObject:@"You" waitUntilDone:TRUE];
+            [_waitLabel performSelectorOnMainThread: @selector(setText:) withObject:@"Your Turn" waitUntilDone:TRUE];
         }
     }
 }

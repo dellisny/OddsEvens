@@ -13,6 +13,7 @@
 
 @property NSFileHandle *logFile;
 @property NSDateFormatter *formatter;
+@property BOOL fileError;
 
 - (void)openLogFile;
 - (void)truncateLog;
@@ -47,6 +48,7 @@ static const char *levelMap[]={
     self=[super init];
     _loggingEnabled=NO;
     _logFile=nil;
+    _fileError=FALSE;
     _formatter=[[NSDateFormatter alloc] init];
     [_formatter setDateFormat:@"yyyyMMdd HH:mm"];
     [self setLogLevel:DELOG_Last];
@@ -76,7 +78,7 @@ static const char *levelMap[]={
     }
     
     // Open the file if it isn't open
-    if (!_logFile) {
+    if (!_logFile && !_fileError) {
         [self openLogFile];
     }
     
@@ -218,6 +220,7 @@ static const char *levelMap[]={
         if (!result) {
             NSLog(@"Error creating file (%@)",_logFileName);
             _logFile=nil;
+            _fileError=TRUE;
             return;
         }
     }
@@ -227,6 +230,7 @@ static const char *levelMap[]={
     if (!_logFile) {
         NSLog(@"Error opening file (%@)",_logFileName);
         _logFile=nil;
+        _fileError=TRUE;
         return;
     }
     [_logFile seekToEndOfFile];
