@@ -118,6 +118,19 @@
     }
 }
 
+- (void) showAlert {
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Odds Evens"
+                                                                   message:[NSString stringWithFormat:@"You are playing: %s",(_oddsP)?"Evens":"Odds"]
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction * action) {}];
+
+    [alert addAction:defaultAction];
+    [self presentViewController:alert animated:YES completion:nil];
+}
+
+
 // 0 means toggle
 // 1 or 2 is the guess
 - (void) tellRemote:(NSNumber *)val {
@@ -305,6 +318,7 @@
     // 0 means toggle
     if (valFromPeer ==0) {
         _isGameLocal=TRUE;
+        [self performSelectorOnMainThread: @selector(showAlert) withObject:nil waitUntilDone:TRUE];
         [self performSelectorOnMainThread: @selector(toggleOE) withObject:nil waitUntilDone:TRUE];
         _isGameLocal=FALSE;
     }
